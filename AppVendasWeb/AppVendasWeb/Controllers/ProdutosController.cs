@@ -48,8 +48,28 @@ namespace AppVendasWeb.Controllers
         // GET: Produtos/Create
         public IActionResult Create()
         {
+
+            List<Categoria> listaCategorias = _context.Categorias.ToList();
+            ViewData["ListaCategorias"] = listaCategorias;
+            ViewData["CategoriaSelecionada"] = "Nenhuma categoria selecionada";
+            ViewData["IdSelecionado"] = "Nenhuma categoria selecionada";
+
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome");
             return View();
+        }
+
+
+        public IActionResult SelecionaCategoria(Guid? id)
+        {
+            List<Categoria> listaCategorias = _context.Categorias.ToList();
+            ViewData["ListaCategorias"] = listaCategorias;
+            Categoria categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            if (categoria != null)
+            {
+                ViewData["CategoriaSelecionada"] = categoria.CategoriaNome;
+                ViewData["IdSelecionado"] = categoria.CategoriaId;
+            }
+            return View("Create");
         }
 
         // POST: Produtos/Create
@@ -84,6 +104,7 @@ namespace AppVendasWeb.Controllers
                 return NotFound();
             }
             ViewData["CategoriaId"] = new SelectList(_context.Categorias, "CategoriaId", "CategoriaNome", produto.CategoriaId);
+
             return View(produto);
         }
 
@@ -161,5 +182,8 @@ namespace AppVendasWeb.Controllers
         {
             return _context.Produtos.Any(e => e.ProdutoId == id);
         }
+
     }
 }
+
+
